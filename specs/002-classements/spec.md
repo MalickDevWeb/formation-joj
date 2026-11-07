@@ -1,6 +1,6 @@
 # 002 — Publier le classement d'une épreuve terminée
 
-**Statut** : Validée
+**Statut** : Implémentée
 **PRD** : specs/prd-resultats.md, TR2
 
 ## Contexte
