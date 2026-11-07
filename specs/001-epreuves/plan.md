@@ -65,7 +65,7 @@ Chaque scénario de la spec est prouvé par au moins un test, au niveau le plus 
 
 Cinq tâches, dans l'ordre des couches ; chacune tient dans un commit.
 
-- [ ] T01 [001-AS1] Écrire d'abord `packages/shared/src/sport-events.spec.ts` (« 001-AS1: accepts a valid sport event and rejects an unknown site »), puis `packages/shared/src/sport-events.ts` et son export
+- [x] T01 [001-AS1] Écrire d'abord `packages/shared/src/sport-events.spec.ts` (« 001-AS1: accepts a valid sport event and rejects an unknown site »), puis `packages/shared/src/sport-events.ts` et son export
 - [ ] T02 [001-AS1, AS2, AS3, AS4] Écrire d'abord `domain/sport-event.spec.ts` (« 001-AS2: advances an upcoming event to in progress », etc.), puis `domain/sport-event.ts` et `domain/sport-events.errors.ts`
 - [ ] T03 [001-AS1, AS4] Écrire d'abord `application/sport-events.application.spec.ts` (« 001-AS4: refuses to advance a finished event »), puis le port, le dépôt en mémoire, `CreateSportEvent` et `AdvanceSportEvent`
 - [ ] T04 [001-AS1, AS3] Écrire d'abord `infra/drizzle-sport-event.repository.int.spec.ts` (« 001-AS3: persists the advanced status »), puis le schéma Drizzle, la migration, le mapper et le dépôt Drizzle
