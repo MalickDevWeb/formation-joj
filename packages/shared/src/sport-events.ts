@@ -58,3 +58,16 @@ export const sportEventSchema = z.object({
   createdAt: z.iso.datetime(),
 });
 export type SportEventResponse = z.infer<typeof sportEventSchema>;
+
+export const sportEventListSchema = z.array(sportEventSchema);
+
+/**
+ * Paramètres de `GET /api/sport-events`. Le jour se lit à l'heure de Dakar, qui est GMT toute
+ * l'année : pas de fuseau à convertir.
+ */
+export const listSportEventsQuerySchema = z.object({
+  day: z.iso.date(),
+  site: sportEventSiteSchema.optional(),
+  status: sportEventStatusSchema.optional(),
+});
+export type ListSportEventsQuery = z.infer<typeof listSportEventsQuerySchema>;

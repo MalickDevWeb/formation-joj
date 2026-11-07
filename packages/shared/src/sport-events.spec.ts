@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { createSportEventSchema, publishRankingSchema } from './sport-events.ts';
+import {
+  createSportEventSchema,
+  listSportEventsQuerySchema,
+  publishRankingSchema,
+} from './sport-events.ts';
 
 const VALID = {
   name: ' 100 m garçons — finale ',
@@ -48,5 +52,34 @@ describe('publishRankingSchema', () => {
     { lines: [{ ...LINE, performance: '' }] },
   ])('002-AS1: rejects an empty ranking or a malformed line (%j)', (body) => {
     expect(publishRankingSchema.safeParse(body).success).toBe(false);
+  });
+});
+
+describe('listSportEventsQuerySchema', () => {
+  it('003-AS1: accepts a day alone', () => {
+    expect(listSportEventsQuerySchema.parse({ day: '2026-11-08' })).toEqual({ day: '2026-11-08' });
+  });
+
+  it('003-AS2: accepts a site filter', () => {
+    expect(listSportEventsQuerySchema.parse({ day: '2026-11-08', site: 'saly' })).toEqual({
+      day: '2026-11-08',
+      site: 'saly',
+    });
+  });
+
+  it('003-AS3: accepts a status filter', () => {
+    expect(listSportEventsQuerySchema.parse({ day: '2026-11-08', status: 'finished' })).toEqual({
+      day: '2026-11-08',
+      status: 'finished',
+    });
+  });
+
+  it.each([
+    {},
+    { day: '08/11/2026' },
+    { day: '2026-11-08', site: 'thies' },
+    { day: '2026-11-08', status: 'live' },
+  ])('003-AS1: rejects a missing or malformed day, or an unknown filter value (%j)', (query) => {
+    expect(listSportEventsQuerySchema.safeParse(query).success).toBe(false);
   });
 });
