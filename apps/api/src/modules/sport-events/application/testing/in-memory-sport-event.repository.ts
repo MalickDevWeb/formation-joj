@@ -29,6 +29,7 @@ function clone(sportEvent: SportEvent): SportEvent {
     site: sportEvent.site,
     startsAt: sportEvent.startsAt,
     status: sportEvent.status,
+    ranking: sportEvent.ranking?.map(({ medal: _medal, ...line }) => line) ?? null,
     createdAt: sportEvent.createdAt,
   });
 }

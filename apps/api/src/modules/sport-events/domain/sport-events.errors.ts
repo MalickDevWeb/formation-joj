@@ -8,6 +8,14 @@ const SPORT_EVENT_ERROR_KINDS = {
   SPORT_EVENT_NOT_FOUND: 'NOT_FOUND',
   /** Une épreuve terminée n'a plus de statut suivant. */
   SPORT_EVENT_ALREADY_FINISHED: 'CONFLICT',
+  /** Le classement d'une épreuve ne se publie qu'une fois terminée. */
+  SPORT_EVENT_NOT_FINISHED: 'BUSINESS_RULE',
+  /** Les rangs ne vont pas de 1 à n sans trou ni doublon. */
+  SPORT_EVENT_RANKS_NOT_CONSECUTIVE: 'BUSINESS_RULE',
+  /** Le même athlète du même pays est sur deux lignes. */
+  SPORT_EVENT_DUPLICATE_ATHLETE: 'BUSINESS_RULE',
+  /** L'épreuve a déjà un classement ; sa correction relève de la rectification. */
+  SPORT_EVENT_RANKING_ALREADY_PUBLISHED: 'CONFLICT',
 } as const satisfies Record<string, ErrorKind>;
 
 export type SportEventErrorCode = keyof typeof SPORT_EVENT_ERROR_KINDS;

@@ -1,10 +1,23 @@
 import {
+  MEDALS,
   SPORT_EVENT_SITES,
   SPORT_EVENT_STATUSES,
+  type Medal,
   type SportEventSite,
   type SportEventStatus,
 } from '@joj/shared';
 import { SportEventError } from './sport-events.errors';
+
+export interface NewRankingLine {
+  rank: number;
+  athlete: string;
+  country: string;
+  performance: string;
+}
+
+export interface RankingLine extends NewRankingLine {
+  medal: Medal | null;
+}
 
 export interface SportEventProps {
   id: string;
@@ -13,6 +26,8 @@ export interface SportEventProps {
   site: SportEventSite;
   startsAt: Date;
   status: SportEventStatus;
+  /** Trié par rang ; `null` tant que le classement n'est pas publié. */
+  ranking: NewRankingLine[] | null;
   createdAt: Date;
 }
 
@@ -38,6 +53,7 @@ export class SportEvent {
       site: validSite(site),
       startsAt,
       status: 'upcoming',
+      ranking: null,
       createdAt: now,
     });
   }
@@ -75,6 +91,33 @@ export class SportEvent {
     return this.props.createdAt;
   }
 
+  /** La médaille se déduit du rang : elle n'est jamais saisie. */
+  get ranking(): RankingLine[] | null {
+    return this.props.ranking?.map((line) => ({ ...line, medal: medalOf(line.rank) })) ?? null;
+  }
+
+  /** Un classement ne sort que complet et cohérent, une seule fois, pour une épreuve terminée. */
+  publishRanking(lines: NewRankingLine[]): void {
+    if (this.props.ranking !== null) {
+      throw new SportEventError(
+        'SPORT_EVENT_RANKING_ALREADY_PUBLISHED',
+        `Sport event ${this.props.id} already has a ranking`,
+        { id: this.props.id },
+      );
+    }
+    if (this.props.status !== 'finished') {
+      throw new SportEventError(
+        'SPORT_EVENT_NOT_FINISHED',
+        `Sport event ${this.props.id} is not finished yet`,
+        { id: this.props.id, status: this.props.status },
+      );
+    }
+    const sorted = [...lines].sort((a, b) => a.rank - b.rank);
+    assertConsecutiveRanks(sorted);
+    assertDistinctAthletes(sorted);
+    this.props = { ...this.props, ranking: sorted };
+  }
+
   /** Seul geste possible sur le statut : passer au suivant, ce qui exclut tout retour en arrière. */
   advance(): void {
     const next = SPORT_EVENT_STATUSES[SPORT_EVENT_STATUSES.indexOf(this.props.status) + 1];
@@ -86,6 +129,37 @@ export class SportEvent {
       );
     }
     this.props = { ...this.props, status: next };
+  }
+}
+
+/** Rangs 1, 2 et 3 : or, argent, bronze ; aucune médaille au-delà. */
+export function medalOf(rank: number): Medal | null {
+  return MEDALS[rank - 1] ?? null;
+}
+
+function assertConsecutiveRanks(sorted: NewRankingLine[]): void {
+  const ranks = sorted.map((line) => line.rank);
+  if (ranks.some((rank, index) => rank !== index + 1)) {
+    throw new SportEventError(
+      'SPORT_EVENT_RANKS_NOT_CONSECUTIVE',
+      'Ranks must follow each other from 1, without gap or duplicate',
+      { ranks },
+    );
+  }
+}
+
+function assertDistinctAthletes(lines: NewRankingLine[]): void {
+  const seen = new Set<string>();
+  for (const { athlete, country } of lines) {
+    const key = `${athlete}|${country}`;
+    if (seen.has(key)) {
+      throw new SportEventError(
+        'SPORT_EVENT_DUPLICATE_ATHLETE',
+        `${athlete} (${country}) appears twice in the ranking`,
+        { athlete, country },
+      );
+    }
+    seen.add(key);
   }
 }
 

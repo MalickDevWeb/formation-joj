@@ -11,6 +11,7 @@ export function toDomain(row: SportEventRow): SportEvent {
     site: sportEventSiteSchema.parse(row.site),
     startsAt: row.startsAt,
     status: sportEventStatusSchema.parse(row.status),
+    ranking: null,
     createdAt: row.createdAt,
   });
 }
