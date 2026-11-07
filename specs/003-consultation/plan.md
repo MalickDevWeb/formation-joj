@@ -58,7 +58,7 @@ Six tâches, dans l'ordre des couches ; chacune tient dans un commit.
 
 - [x] T01 [003-AS1, AS2, AS3] Écrire d'abord `packages/shared/src/sport-events.spec.ts` (« 003-AS1: accepts a day, and an optional site and status »), puis `listSportEventsQuerySchema` et `sportEventListSchema`
 - [x] T02 [003-AS1, AS2, AS3, AS6] Écrire d'abord `application/sport-events.application.spec.ts` (« 003-AS2: lists only the events of the chosen site »), puis `list()` dans le port et le dépôt en mémoire, `ListSportEvents` et `GetSportEvent`
-- [ ] T03 [003-AS1, AS2, AS3] Écrire d'abord `infra/drizzle-sport-event.repository.int.spec.ts` (« 003-AS1: lists the events of a day sorted by time »), puis `list()` en Drizzle
+- [x] T03 [003-AS1, AS2, AS3] Écrire d'abord `infra/drizzle-sport-event.repository.int.spec.ts` (« 003-AS1: lists the events of a day sorted by time »), puis `list()` en Drizzle
 - [ ] T04 [003-AS1, AS2, AS3, AS4, AS6] Écrire d'abord `apps/api/test/sport-events-read.e2e.spec.ts` (« 003-AS6: answers 404 for an unknown event »), puis les deux routes `GET` du controller
 - [ ] T05 [003-AS1, AS4, AS6] Écrire d'abord `apps/web/src/mocks/handlers.test.ts` (« 003-AS1: the mock lists the events of a day »), puis les épreuves de `fixture.ts` et les deux routes de `handlers.ts`
 - [ ] T06 [003-AS1, AS2, AS3, AS4, AS5, AS6] Écrire d'abord `features/sport-events/components/sport-events-page.test.tsx` et `sport-event-detail-page.test.tsx` (« 003-AS4: shows the podium and the full ranking »), puis les appels, les requêtes, les deux pages, leurs routes, le lien de l'accueil et l'audit axe `routes/epreuves.a11y.test.tsx`

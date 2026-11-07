@@ -1,6 +1,6 @@
 import type { ListSportEventsQuery } from '@joj/shared';
 import { Inject, Injectable } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { and, asc, eq, gte, inArray, lt, type SQL } from 'drizzle-orm';
 import type { Database } from '../../../core/database/database';
 import { DATABASE } from '../../../core/database/database.module';
 import { SportEventRepository } from '../application/sport-event.repository';
@@ -26,8 +26,36 @@ export class DrizzleSportEventRepository extends SportEventRepository {
     return toDomain(row, lines);
   }
 
-  async list(_filter: ListSportEventsQuery): Promise<SportEvent[]> {
-    throw new Error('non implémenté');
+  async list({ day, site, status }: ListSportEventsQuery): Promise<SportEvent[]> {
+    // Dakar est à GMT toute l'année : le jour va de minuit GMT à minuit GMT.
+    const start = new Date(`${day}T00:00:00.000Z`);
+    const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+    const conditions: SQL[] = [gte(sportEvents.startsAt, start), lt(sportEvents.startsAt, end)];
+    if (site !== undefined) conditions.push(eq(sportEvents.site, site));
+    if (status !== undefined) conditions.push(eq(sportEvents.status, status));
+
+    const rows = await this.db
+      .select()
+      .from(sportEvents)
+      .where(and(...conditions))
+      .orderBy(asc(sportEvents.startsAt));
+    if (rows.length === 0) return [];
+    // Une seule requête pour les classements de toutes les épreuves trouvées.
+    const lines = await this.db
+      .select()
+      .from(rankingLines)
+      .where(
+        inArray(
+          rankingLines.sportEventId,
+          rows.map((row) => row.id),
+        ),
+      );
+    return rows.map((row) =>
+      toDomain(
+        row,
+        lines.filter((line) => line.sportEventId === row.id),
+      ),
+    );
   }
 
   async insert(sportEvent: SportEvent): Promise<void> {
