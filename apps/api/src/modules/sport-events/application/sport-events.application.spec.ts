@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { InMemorySportEventRepository } from './testing/in-memory-sport-event.repository';
 import { AdvanceSportEvent } from './use-cases/advance-sport-event';
 import { CreateSportEvent } from './use-cases/create-sport-event';
+import { GetSportEvent } from './use-cases/get-sport-event';
+import { ListSportEvents } from './use-cases/list-sport-events';
 import { PublishRanking } from './use-cases/publish-ranking';
 
 const INPUT = {
@@ -19,6 +21,8 @@ function setup() {
     createSportEvent: new CreateSportEvent(sportEvents),
     advanceSportEvent: new AdvanceSportEvent(sportEvents),
     publishRanking: new PublishRanking(sportEvents),
+    listSportEvents: new ListSportEvents(sportEvents),
+    getSportEvent: new GetSportEvent(sportEvents),
   };
 }
 
@@ -108,6 +112,62 @@ describe('ranking publication (application layer)', () => {
   it('rejects publishing the ranking of an unknown sport event', async () => {
     const app = setup();
     await expect(app.publishRanking.execute(randomUUID(), { lines: LINES })).rejects.toMatchObject({
+      code: 'SPORT_EVENT_NOT_FOUND',
+    });
+  });
+});
+
+describe('reading sport events (application layer)', () => {
+  const at = (startsAt: string, site: 'dakar' | 'diamniadio' | 'saly' = 'diamniadio') => ({
+    ...INPUT,
+    name: `Épreuve ${startsAt} ${site}`,
+    site,
+    startsAt,
+  });
+
+  it('003-AS1: lists the events of a day, earliest first', async () => {
+    const app = setup();
+    const late = await app.createSportEvent.execute(at('2026-11-08T10:40:00.000Z'));
+    const early = await app.createSportEvent.execute(at('2026-11-08T09:00:00.000Z'));
+    await app.createSportEvent.execute(at('2026-11-09T09:00:00.000Z'));
+
+    const listed = await app.listSportEvents.execute({ day: '2026-11-08' });
+    expect(listed.map((event) => event.id)).toEqual([early.id, late.id]);
+  });
+
+  it('003-AS2: lists only the events of the chosen site', async () => {
+    const app = setup();
+    const saly = await app.createSportEvent.execute(at('2026-11-08T09:00:00.000Z', 'saly'));
+    await app.createSportEvent.execute(at('2026-11-08T10:00:00.000Z', 'dakar'));
+
+    const listed = await app.listSportEvents.execute({ day: '2026-11-08', site: 'saly' });
+    expect(listed.map((event) => event.id)).toEqual([saly.id]);
+  });
+
+  it('003-AS3: lists only the events with the chosen status', async () => {
+    const app = setup();
+    const done = await app.createSportEvent.execute(at('2026-11-08T09:00:00.000Z'));
+    await app.advanceSportEvent.execute(done.id);
+    await app.advanceSportEvent.execute(done.id);
+    await app.createSportEvent.execute(at('2026-11-08T10:00:00.000Z'));
+
+    const listed = await app.listSportEvents.execute({ day: '2026-11-08', status: 'finished' });
+    expect(listed.map((event) => event.id)).toEqual([done.id]);
+  });
+
+  it('003-AS4: gets an event with its ranking', async () => {
+    const app = setup();
+    const { id } = await app.createSportEvent.execute(INPUT);
+    await app.advanceSportEvent.execute(id);
+    await app.advanceSportEvent.execute(id);
+    await app.publishRanking.execute(id, { lines: LINES });
+
+    expect((await app.getSportEvent.execute(id)).ranking?.[0]?.medal).toBe('gold');
+  });
+
+  it('003-AS6: refuses to get an unknown event', async () => {
+    const app = setup();
+    await expect(app.getSportEvent.execute(randomUUID())).rejects.toMatchObject({
       code: 'SPORT_EVENT_NOT_FOUND',
     });
   });

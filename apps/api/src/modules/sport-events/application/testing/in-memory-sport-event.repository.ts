@@ -1,3 +1,4 @@
+import type { ListSportEventsQuery } from '@joj/shared';
 import { SportEvent } from '../../domain/sport-event';
 import { rankingAlreadyPublished } from '../../domain/sport-events.errors';
 import { SportEventRepository } from '../sport-event.repository';
@@ -9,6 +10,15 @@ export class InMemorySportEventRepository extends SportEventRepository {
   async findById(id: string): Promise<SportEvent | null> {
     const found = this.rows.get(id);
     return found ? clone(found) : null;
+  }
+
+  async list({ day, site, status }: ListSportEventsQuery): Promise<SportEvent[]> {
+    return [...this.rows.values()]
+      .filter((event) => event.startsAt.toISOString().slice(0, 10) === day)
+      .filter((event) => site === undefined || event.site === site)
+      .filter((event) => status === undefined || event.status === status)
+      .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())
+      .map(clone);
   }
 
   async insert(sportEvent: SportEvent): Promise<void> {

@@ -1,3 +1,4 @@
+import type { ListSportEventsQuery } from '@joj/shared';
 import { Inject, Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import type { Database } from '../../../core/database/database';
@@ -23,6 +24,10 @@ export class DrizzleSportEventRepository extends SportEventRepository {
       .from(rankingLines)
       .where(eq(rankingLines.sportEventId, id));
     return toDomain(row, lines);
+  }
+
+  async list(_filter: ListSportEventsQuery): Promise<SportEvent[]> {
+    throw new Error('non implémenté');
   }
 
   async insert(sportEvent: SportEvent): Promise<void> {
