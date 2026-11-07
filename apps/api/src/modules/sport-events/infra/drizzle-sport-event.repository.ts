@@ -28,4 +28,8 @@ export class DrizzleSportEventRepository extends SportEventRepository {
       .set({ status: sportEvent.status })
       .where(eq(sportEvents.id, sportEvent.id));
   }
+
+  async saveRanking(_sportEvent: SportEvent): Promise<void> {
+    throw new Error('non implémenté');
+  }
 }

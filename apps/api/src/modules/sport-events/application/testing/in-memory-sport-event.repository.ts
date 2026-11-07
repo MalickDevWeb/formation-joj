@@ -1,4 +1,5 @@
 import { SportEvent } from '../../domain/sport-event';
+import { rankingAlreadyPublished } from '../../domain/sport-events.errors';
 import { SportEventRepository } from '../sport-event.repository';
 
 /** Fake fidèle au contrat du port, pour tester l'application sans base. */
@@ -16,6 +17,14 @@ export class InMemorySportEventRepository extends SportEventRepository {
 
   async update(sportEvent: SportEvent): Promise<void> {
     if (!this.rows.has(sportEvent.id)) return;
+    this.rows.set(sportEvent.id, clone(sportEvent));
+  }
+
+  /** Comme la clé primaire en base : un seul classement par épreuve. */
+  async saveRanking(sportEvent: SportEvent): Promise<void> {
+    const stored = this.rows.get(sportEvent.id);
+    if (!stored) return;
+    if (stored.ranking !== null) throw rankingAlreadyPublished(sportEvent.id);
     this.rows.set(sportEvent.id, clone(sportEvent));
   }
 }

@@ -29,3 +29,11 @@ export class SportEventError extends AppError<SportEventErrorCode> {
 export function sportEventNotFound(id: string): SportEventError {
   return new SportEventError('SPORT_EVENT_NOT_FOUND', `No sport event with id ${id}`, { id });
 }
+
+export function rankingAlreadyPublished(id: string): SportEventError {
+  return new SportEventError(
+    'SPORT_EVENT_RANKING_ALREADY_PUBLISHED',
+    `Sport event ${id} already has a ranking`,
+    { id },
+  );
+}

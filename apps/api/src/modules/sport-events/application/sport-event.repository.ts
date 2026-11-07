@@ -9,4 +9,6 @@ export abstract class SportEventRepository {
   abstract insert(sportEvent: SportEvent): Promise<void>;
   /** Écrit le statut de l'épreuve. */
   abstract update(sportEvent: SportEvent): Promise<void>;
+  /** Écrit le classement ; lève SPORT_EVENT_RANKING_ALREADY_PUBLISHED s'il en existe déjà un. */
+  abstract saveRanking(sportEvent: SportEvent): Promise<void>;
 }

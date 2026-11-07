@@ -6,7 +6,7 @@ import {
   type SportEventSite,
   type SportEventStatus,
 } from '@joj/shared';
-import { SportEventError } from './sport-events.errors';
+import { rankingAlreadyPublished, SportEventError } from './sport-events.errors';
 
 export interface NewRankingLine {
   rank: number;
@@ -98,13 +98,7 @@ export class SportEvent {
 
   /** Un classement ne sort que complet et cohérent, une seule fois, pour une épreuve terminée. */
   publishRanking(lines: NewRankingLine[]): void {
-    if (this.props.ranking !== null) {
-      throw new SportEventError(
-        'SPORT_EVENT_RANKING_ALREADY_PUBLISHED',
-        `Sport event ${this.props.id} already has a ranking`,
-        { id: this.props.id },
-      );
-    }
+    if (this.props.ranking !== null) throw rankingAlreadyPublished(this.props.id);
     if (this.props.status !== 'finished') {
       throw new SportEventError(
         'SPORT_EVENT_NOT_FINISHED',
