@@ -1,6 +1,6 @@
 # 001 — Créer une épreuve et faire avancer son statut
 
-**Statut** : Validée
+**Statut** : Implémentée
 **PRD** : specs/prd-resultats.md, TR1
 
 ## Contexte
