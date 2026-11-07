@@ -8,6 +8,13 @@
       "when": 1794069372459,
       "tag": "0000_create-sport-events",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794070298255,
+      "tag": "0001_create-ranking-lines",
+      "breakpoints": true
     }
   ]
 }

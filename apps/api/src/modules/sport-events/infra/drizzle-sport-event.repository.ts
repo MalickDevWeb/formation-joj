@@ -4,8 +4,10 @@ import type { Database } from '../../../core/database/database';
 import { DATABASE } from '../../../core/database/database.module';
 import { SportEventRepository } from '../application/sport-event.repository';
 import type { SportEvent } from '../domain/sport-event';
-import { toDomain, toRow } from './sport-event.mapper';
-import { sportEvents } from './sport-events.schema';
+import { isUniqueViolation } from '../../../core/database/pg-errors';
+import { rankingAlreadyPublished } from '../domain/sport-events.errors';
+import { toDomain, toRankingRows, toRow } from './sport-event.mapper';
+import { RANKING_LINES_PK, rankingLines, sportEvents } from './sport-events.schema';
 
 @Injectable()
 export class DrizzleSportEventRepository extends SportEventRepository {
@@ -15,7 +17,12 @@ export class DrizzleSportEventRepository extends SportEventRepository {
 
   async findById(id: string): Promise<SportEvent | null> {
     const [row] = await this.db.select().from(sportEvents).where(eq(sportEvents.id, id)).limit(1);
-    return row ? toDomain(row) : null;
+    if (!row) return null;
+    const lines = await this.db
+      .select()
+      .from(rankingLines)
+      .where(eq(rankingLines.sportEventId, id));
+    return toDomain(row, lines);
   }
 
   async insert(sportEvent: SportEvent): Promise<void> {
@@ -29,7 +36,13 @@ export class DrizzleSportEventRepository extends SportEventRepository {
       .where(eq(sportEvents.id, sportEvent.id));
   }
 
-  async saveRanking(_sportEvent: SportEvent): Promise<void> {
-    throw new Error('non implémenté');
+  /** Un seul INSERT de toutes les lignes : le classement s'écrit entier ou pas du tout. */
+  async saveRanking(sportEvent: SportEvent): Promise<void> {
+    try {
+      await this.db.insert(rankingLines).values(toRankingRows(sportEvent));
+    } catch (error) {
+      if (isUniqueViolation(error, RANKING_LINES_PK)) throw rankingAlreadyPublished(sportEvent.id);
+      throw error;
+    }
   }
 }

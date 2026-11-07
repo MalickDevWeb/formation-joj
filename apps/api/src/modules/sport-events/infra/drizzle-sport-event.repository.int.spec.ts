@@ -44,3 +44,51 @@ describe('DrizzleSportEventRepository (in-memory PGlite, migrations applied)', (
     expect((await repository.findById(sportEvent.id))?.status).toBe('finished');
   });
 });
+
+describe('DrizzleSportEventRepository rankings (in-memory PGlite)', () => {
+  let connection: DatabaseConnection;
+  let repository: DrizzleSportEventRepository;
+
+  beforeAll(async () => {
+    connection = openDatabase({ pgliteDataDir: 'memory://' });
+    await connection.migrate();
+    repository = new DrizzleSportEventRepository(connection.db);
+  });
+
+  afterAll(() => connection?.close());
+
+  const finishedEvent = async () => {
+    const sportEvent = newEvent();
+    sportEvent.advance();
+    sportEvent.advance();
+    await repository.insert(sportEvent);
+    await repository.update(sportEvent);
+    return sportEvent;
+  };
+
+  it('002-AS1: reads back the ranking it wrote, sorted by rank', async () => {
+    const sportEvent = await finishedEvent();
+    sportEvent.publishRanking([
+      { rank: 2, athlete: 'Brian Kiptoo', country: 'KEN', performance: '10.41 s' },
+      { rank: 1, athlete: 'Amadou Diallo', country: 'SEN', performance: '10.38 s' },
+    ]);
+    await repository.saveRanking(sportEvent);
+
+    const stored = await repository.findById(sportEvent.id);
+    expect(stored).toEqual(sportEvent);
+    expect(stored?.ranking?.map((line) => line.medal)).toEqual(['gold', 'silver']);
+  });
+
+  it('002-AS5: refuses to write a second ranking for the same event', async () => {
+    const sportEvent = await finishedEvent();
+    sportEvent.publishRanking([
+      { rank: 1, athlete: 'Amadou Diallo', country: 'SEN', performance: '10.38 s' },
+    ]);
+    await repository.saveRanking(sportEvent);
+
+    await expect(repository.saveRanking(sportEvent)).rejects.toMatchObject({
+      code: 'SPORT_EVENT_RANKING_ALREADY_PUBLISHED',
+    });
+    expect((await repository.findById(sportEvent.id))?.ranking).toHaveLength(1);
+  });
+});

@@ -1,9 +1,12 @@
 import { sportEventSiteSchema, sportEventStatusSchema } from '@joj/shared';
 import { SportEvent } from '../domain/sport-event';
-import type { SportEventRow } from './sport-events.schema';
+import type { RankingLineRow, SportEventRow } from './sport-events.schema';
 
-/** Ligne de la table → entité. Un site ou un statut inconnu en base est un bug : on échoue tôt. */
-export function toDomain(row: SportEventRow): SportEvent {
+/**
+ * Lignes des tables → entité. Un site ou un statut inconnu en base est un bug : on échoue tôt.
+ * Sans ligne de classement, le classement n'est pas publié.
+ */
+export function toDomain(row: SportEventRow, lines: RankingLineRow[]): SportEvent {
   return SportEvent.restore({
     id: row.id,
     name: row.name,
@@ -11,7 +14,17 @@ export function toDomain(row: SportEventRow): SportEvent {
     site: sportEventSiteSchema.parse(row.site),
     startsAt: row.startsAt,
     status: sportEventStatusSchema.parse(row.status),
-    ranking: null,
+    ranking:
+      lines.length === 0
+        ? null
+        : [...lines]
+            .sort((a, b) => a.rank - b.rank)
+            .map(({ rank, athlete, country, performance }) => ({
+              rank,
+              athlete,
+              country,
+              performance,
+            })),
     createdAt: row.createdAt,
   });
 }
@@ -27,4 +40,15 @@ export function toRow(sportEvent: SportEvent): SportEventRow {
     status: sportEvent.status,
     createdAt: sportEvent.createdAt,
   };
+}
+
+/** Classement de l'entité → lignes de la table `ranking_lines`. */
+export function toRankingRows(sportEvent: SportEvent): RankingLineRow[] {
+  return (sportEvent.ranking ?? []).map(({ rank, athlete, country, performance }) => ({
+    sportEventId: sportEvent.id,
+    rank,
+    athlete,
+    country,
+    performance,
+  }));
 }
