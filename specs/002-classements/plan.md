@@ -66,7 +66,7 @@ Chaque scénario de la spec est prouvé par au moins un test, au niveau le plus 
 
 Cinq tâches, dans l'ordre des couches ; chacune tient dans un commit.
 
-- [ ] T01 [002-AS1] Écrire d'abord `packages/shared/src/sport-events.spec.ts` (« 002-AS1: accepts a ranking of lines with rank, athlete, country and performance »), puis `publishRankingSchema`, `rankingLineSchema` et le champ `ranking`
+- [x] T01 [002-AS1] Écrire d'abord `packages/shared/src/sport-events.spec.ts` (« 002-AS1: accepts a ranking of lines with rank, athlete, country and performance »), puis `publishRankingSchema`, `rankingLineSchema` et le champ `ranking`
 - [ ] T02 [002-AS1, AS2, AS3, AS4, AS5] Écrire d'abord `domain/sport-event.spec.ts` (« 002-AS3: refuses ranks that do not follow from 1 », etc.), puis `publishRanking()`, `medalOf()` et les codes d'erreur
 - [ ] T03 [002-AS1, AS5] Écrire d'abord `application/sport-events.application.spec.ts` (« 002-AS1: publishes and stores the ranking of a finished event »), puis `saveRanking()` dans le port et le dépôt en mémoire, et `PublishRanking`
 - [ ] T04 [002-AS1, AS5] Écrire d'abord `infra/drizzle-sport-event.repository.int.spec.ts` (« 002-AS1: reads back the ranking it wrote »), puis la table `ranking_lines`, la migration, le mapper et `saveRanking()` en Drizzle

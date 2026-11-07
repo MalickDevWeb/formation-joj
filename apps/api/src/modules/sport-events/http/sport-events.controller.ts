@@ -47,6 +47,7 @@ function toResponse(sportEvent: SportEvent): SportEventResponse {
     site: sportEvent.site,
     startsAt: sportEvent.startsAt.toISOString(),
     status: sportEvent.status,
+    ranking: null,
     createdAt: sportEvent.createdAt.toISOString(),
   };
 }
