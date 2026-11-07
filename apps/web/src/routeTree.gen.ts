@@ -10,33 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EpreuvesIndexRouteImport } from './routes/epreuves.index'
+import { Route as EpreuvesSportEventIdRouteImport } from './routes/epreuves.$sportEventId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EpreuvesIndexRoute = EpreuvesIndexRouteImport.update({
+  id: '/epreuves/',
+  path: '/epreuves/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EpreuvesSportEventIdRoute = EpreuvesSportEventIdRouteImport.update({
+  id: '/epreuves/$sportEventId',
+  path: '/epreuves/$sportEventId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/epreuves/$sportEventId': typeof EpreuvesSportEventIdRoute
+  '/epreuves/': typeof EpreuvesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/epreuves/$sportEventId': typeof EpreuvesSportEventIdRoute
+  '/epreuves': typeof EpreuvesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/epreuves/$sportEventId': typeof EpreuvesSportEventIdRoute
+  '/epreuves/': typeof EpreuvesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/epreuves/$sportEventId' | '/epreuves/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/epreuves/$sportEventId' | '/epreuves'
+  id: '__root__' | '/' | '/epreuves/$sportEventId' | '/epreuves/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  EpreuvesSportEventIdRoute: typeof EpreuvesSportEventIdRoute
+  EpreuvesIndexRoute: typeof EpreuvesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +68,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/epreuves/': {
+      id: '/epreuves/'
+      path: '/epreuves'
+      fullPath: '/epreuves/'
+      preLoaderRoute: typeof EpreuvesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/epreuves/$sportEventId': {
+      id: '/epreuves/$sportEventId'
+      path: '/epreuves/$sportEventId'
+      fullPath: '/epreuves/$sportEventId'
+      preLoaderRoute: typeof EpreuvesSportEventIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  EpreuvesSportEventIdRoute: EpreuvesSportEventIdRoute,
+  EpreuvesIndexRoute: EpreuvesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
