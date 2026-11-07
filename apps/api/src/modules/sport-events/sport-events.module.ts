@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { SportEventRepository } from './application/sport-event.repository';
 import { AdvanceSportEvent } from './application/use-cases/advance-sport-event';
 import { CreateSportEvent } from './application/use-cases/create-sport-event';
+import { PublishRanking } from './application/use-cases/publish-ranking';
 import { SportEventsController } from './http/sport-events.controller';
 import { DrizzleSportEventRepository } from './infra/drizzle-sport-event.repository';
 
@@ -12,6 +13,7 @@ import { DrizzleSportEventRepository } from './infra/drizzle-sport-event.reposit
     { provide: SportEventRepository, useClass: DrizzleSportEventRepository },
     CreateSportEvent,
     AdvanceSportEvent,
+    PublishRanking,
   ],
 })
 export class SportEventsModule {}

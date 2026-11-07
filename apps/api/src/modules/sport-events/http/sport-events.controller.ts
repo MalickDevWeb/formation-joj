@@ -2,6 +2,7 @@ import { Body, Controller, HttpCode, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
   createSportEventSchema,
+  publishRankingSchema,
   sportEventIdParamsSchema,
   type SportEventResponse,
   sportEventSchema,
@@ -9,9 +10,11 @@ import {
 import { createZodDto, ZodSerializerDto } from 'nestjs-zod';
 import { AdvanceSportEvent } from '../application/use-cases/advance-sport-event';
 import { CreateSportEvent } from '../application/use-cases/create-sport-event';
+import { PublishRanking } from '../application/use-cases/publish-ranking';
 import type { SportEvent } from '../domain/sport-event';
 
 class CreateSportEventDto extends createZodDto(createSportEventSchema) {}
+class PublishRankingDto extends createZodDto(publishRankingSchema) {}
 class SportEventIdParamsDto extends createZodDto(sportEventIdParamsSchema) {}
 class SportEventDto extends createZodDto(sportEventSchema) {}
 
@@ -22,6 +25,7 @@ export class SportEventsController {
   constructor(
     private readonly createSportEvent: CreateSportEvent,
     private readonly advanceSportEvent: AdvanceSportEvent,
+    private readonly publishRanking: PublishRanking,
   ) {}
 
   @Post()
@@ -37,6 +41,15 @@ export class SportEventsController {
   async advance(@Param() { id }: SportEventIdParamsDto): Promise<SportEventResponse> {
     return toResponse(await this.advanceSportEvent.execute(id));
   }
+
+  @Post(':id/ranking')
+  @ZodSerializerDto(SportEventDto)
+  async ranking(
+    @Param() { id }: SportEventIdParamsDto,
+    @Body() body: PublishRankingDto,
+  ): Promise<SportEventResponse> {
+    return toResponse(await this.publishRanking.execute(id, body));
+  }
 }
 
 function toResponse(sportEvent: SportEvent): SportEventResponse {
@@ -47,7 +60,7 @@ function toResponse(sportEvent: SportEvent): SportEventResponse {
     site: sportEvent.site,
     startsAt: sportEvent.startsAt.toISOString(),
     status: sportEvent.status,
-    ranking: null,
+    ranking: sportEvent.ranking,
     createdAt: sportEvent.createdAt.toISOString(),
   };
 }
