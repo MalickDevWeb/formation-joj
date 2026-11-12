@@ -153,7 +153,9 @@ Pour chaque tranche, après la validation de sa spec et de son plan, quatre agen
 | 3     | `frontend`  | `apps/web/`                     | les tâches écran du plan, test d'abord, en suivant la note de design              |
 | 4     | `relecteur` | lecture seule                   | le verdict de `/converge` : celui qui produit ne valide pas                       |
 
-Aucun agent ne modifie la spec ni les tâches d'un plan validé, ne pousse, ni ne valide son propre travail. Les agents sont dans `.claude/agents/`. Le détail (rôles, déroulé, lancement, garde-fous, coût) est dans [`docs/equipe-agents.md`](docs/equipe-agents.md) ; `.claude/hooks/agents.test.mts` vérifie leurs garde-fous à chaque `pnpm test`.
+Aucun agent ne modifie la spec ni les tâches d'un plan validé, ne pousse, ni ne valide son propre travail.
+
+**Essai réel (12 novembre 2026)**, sur une spec jetable dans une copie isolée du dépôt : `backend` et `frontend` ont fait chacun leur tâche test d'abord (`pnpm tdd:red` : « rouge pour la bonne raison »), un commit au bon format chacun ; `backend` a **refusé** une demande glissée hors de son périmètre (modifier `apps/web/`) ; `ux-design` a écrit le système de design d'après Podium Dakar et écarté un contraste insuffisant (vert sur sable, 4,4:1) ; `pnpm check` est resté vert (166 tests). Les agents sont dans `.claude/agents/`. Le détail (rôles, déroulé, lancement, garde-fous, coût) est dans [`docs/equipe-agents.md`](docs/equipe-agents.md) ; `.claude/hooks/agents.test.mts` vérifie leurs garde-fous à chaque `pnpm test`.
 
 ## Claude Code : hooks et relecteur
 
