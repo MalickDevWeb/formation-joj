@@ -1,4 +1,8 @@
-import { listSportEventsQuerySchema, type ProblemDetails } from '@joj/shared';
+import {
+  listSportEventsQuerySchema,
+  type ProblemDetails,
+  sportEventIdParamsSchema,
+} from '@joj/shared';
 import { delay, http, HttpResponse, type RequestHandler } from 'msw';
 import type { z } from 'zod';
 import { mockControl } from './control';
@@ -72,7 +76,10 @@ export const handlers: RequestHandler[] = [
   http.get('*/api/sport-events/:id', async ({ params }) => {
     const failure = await gate('GET', '/api/sport-events/:id');
     if (failure) return failure;
-    const id = String(params['id']);
+    // Même contrat que l'API : un identifiant qui n'est pas un UUID est refusé en 400.
+    const parsed = sportEventIdParamsSchema.safeParse({ id: params['id'] });
+    if (!parsed.success) return validationFailed(parsed.error);
+    const { id } = parsed.data;
     const found = fixture.sportEvents.find((event) => event.id === id);
     return found ? HttpResponse.json(found) : sportEventNotFound(id);
   }),

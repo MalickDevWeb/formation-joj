@@ -48,4 +48,11 @@ describe('mock sport events API', () => {
     expect(response.headers.get('content-type')).toContain('application/problem+json');
     expect(await response.json()).toMatchObject({ code: 'SPORT_EVENT_NOT_FOUND' });
   });
+
+  it('003-AS6: the mock answers 400 VALIDATION_FAILED for a malformed id, like the API', async () => {
+    const response = await call('/api/sport-events/abc');
+    expect(response.status).toBe(400);
+    expect(response.headers.get('content-type')).toContain('application/problem+json');
+    expect(await response.json()).toMatchObject({ code: 'VALIDATION_FAILED' });
+  });
 });
