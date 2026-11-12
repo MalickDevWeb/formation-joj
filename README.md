@@ -142,6 +142,19 @@ Côté API, les tests s'appellent `*.spec.ts` (unitaires), `*.int.spec.ts` (int�
 
 Un composant shadcn de plus : `pnpm dlx shadcn@latest add <composant>` dans `apps/web`.
 
+## Équipe d'agents Claude Code
+
+Pour chaque tranche, après la validation de sa spec et de son plan, quatre agents se passent le travail, chacun dans son périmètre :
+
+| Ordre | Agent       | Périmètre                       | Ce qu'il rend                                                                     |
+| ----- | ----------- | ------------------------------- | --------------------------------------------------------------------------------- |
+| 1     | `ux-design` | `design/`                       | la note de design de l'écran (`design/NNN-nom.md`), d'après Podium Dakar          |
+| 2     | `backend`   | `packages/shared/`, `apps/api/` | les tâches API du plan, test d'abord, un commit par tâche, et le contrat de l'API |
+| 3     | `frontend`  | `apps/web/`                     | les tâches écran du plan, test d'abord, en suivant la note de design              |
+| 4     | `relecteur` | lecture seule                   | le verdict de `/converge` : celui qui produit ne valide pas                       |
+
+Aucun agent ne modifie la spec ni les tâches d'un plan validé, ne pousse, ni ne valide son propre travail. Les agents sont dans `.claude/agents/`.
+
 ## Claude Code : hooks et relecteur
 
 Configurés dans `.claude/settings.json`, écrits en Node dans `.claude/hooks/` et testés (`pnpm test`) :
