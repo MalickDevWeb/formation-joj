@@ -49,4 +49,9 @@ describe('SportEventDetailPage', () => {
     await open(UNKNOWN_ID);
     expect(await screen.findByRole('alert')).toHaveTextContent('Cette épreuve est introuvable.');
   });
+
+  it('003-AS6: says the event cannot be found for a malformed id', async () => {
+    await open('abc');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Cette épreuve est introuvable.');
+  });
 });

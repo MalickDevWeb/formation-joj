@@ -1,4 +1,4 @@
-import type { SportEventResponse } from '@joj/shared';
+import { type SportEventResponse, sportEventIdParamsSchema } from '@joj/shared';
 import { Link } from '@tanstack/react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSportEvent } from '../api/sport-events.queries';
@@ -6,13 +6,30 @@ import { errorMessage } from './error-message';
 import { formatDateTime, MEDAL_LABELS, SITE_LABELS, STATUS_LABELS } from './labels';
 
 export function SportEventDetailPage({ id }: { id: string }) {
-  const sportEvent = useSportEvent(id);
+  // Même règle que l'API : un identifiant qui n'est pas un UUID ne désigne aucune épreuve.
+  const known = sportEventIdParamsSchema.safeParse({ id }).success;
 
   return (
     <div className="flex flex-col gap-6">
       <Link to="/epreuves" className="text-sm text-muted-foreground hover:underline">
         <span aria-hidden="true">←</span> Toutes les épreuves
       </Link>
+      {known ? (
+        <SportEventLoader id={id} />
+      ) : (
+        <p role="alert" className="text-destructive">
+          Cette épreuve est introuvable.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function SportEventLoader({ id }: { id: string }) {
+  const sportEvent = useSportEvent(id);
+
+  return (
+    <>
       {sportEvent.isPending && <p className="text-muted-foreground">Chargement…</p>}
       {sportEvent.isError && (
         <p role="alert" className="text-destructive">
@@ -20,7 +37,7 @@ export function SportEventDetailPage({ id }: { id: string }) {
         </p>
       )}
       {sportEvent.isSuccess && <SportEventCard sportEvent={sportEvent.data} />}
-    </div>
+    </>
   );
 }
 
