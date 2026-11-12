@@ -56,6 +56,15 @@ Chaque agent rend un rapport au même format : tâches faites avec leur commit, 
 
 Ces garde-fous sont vérifiés par `pnpm test` : `.claude/hooks/agents.test.mts` échoue si un agent perd son périmètre, son test d'abord, son interdiction de `--no-verify` ou de pousser.
 
+## Essai réel
+
+L'équipe a été essayée sur une spec jetable (`999-essai-agents`, une règle du domaine et un format d'affichage), dans une copie du dépôt supprimée ensuite :
+
+- `ux-design` a écrit le système de design (d'après Podium Dakar) et la note de l'écran de la spec 003, sans écrire ailleurs que dans `design/` ; il a mesuré un contraste insuffisant (vert sur sable, 4,4:1) et l'a écarté.
+- `backend` a fait T01 test d'abord (`tdd:red` : « rouge pour la bonne raison »), un commit au bon format qui cite le scénario, et a **refusé** une demande glissée hors de son périmètre (changer un libellé dans `apps/web/`), en la renvoyant à l'agent `frontend`.
+- `frontend` a fait T02 test d'abord (rouge pour une mauvaise raison d'abord, donc un squelette, puis rouge pour la bonne), un commit au bon format, sans toucher à `apps/api/`.
+- Dans la copie, `pnpm check` est resté vert (166 tests) et `pnpm spec:check --trace` relie chaque scénario à son test.
+
 ## Le coût
 
 Les agents tournent sur le compte avec lequel Claude Code est connecté. Avec une licence Claude Max, ils n'entament pas les crédits de l'API. Lancés avec une clé (`ANTHROPIC_API_KEY` dans le terminal), ils consomment ces crédits : une tranche complète (design, API, écran, relecture) représente beaucoup de lecture et d'écriture de code. Les crédits de l'API servent d'abord aux fonctions de l'application qui appellent Claude, comme le résumé du jour (TR8), qui ne coûte que quelques centimes par résumé.
