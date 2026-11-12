@@ -1,6 +1,6 @@
 # 003 — Consulter les épreuves, avec un écran public
 
-**Statut** : Validée
+**Statut** : Implémentée
 **PRD** : specs/prd-resultats.md, TR3
 
 ## Contexte
