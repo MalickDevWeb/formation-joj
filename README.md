@@ -153,7 +153,7 @@ Pour chaque tranche, après la validation de sa spec et de son plan, quatre agen
 | 3     | `frontend`  | `apps/web/`                     | les tâches écran du plan, test d'abord, en suivant la note de design              |
 | 4     | `relecteur` | lecture seule                   | le verdict de `/converge` : celui qui produit ne valide pas                       |
 
-Aucun agent ne modifie la spec ni les tâches d'un plan validé, ne pousse, ni ne valide son propre travail. Les agents sont dans `.claude/agents/`.
+Aucun agent ne modifie la spec ni les tâches d'un plan validé, ne pousse, ni ne valide son propre travail. Les agents sont dans `.claude/agents/`. Le détail (rôles, déroulé, lancement, garde-fous, coût) est dans [`docs/equipe-agents.md`](docs/equipe-agents.md) ; `.claude/hooks/agents.test.mts` vérifie leurs garde-fous à chaque `pnpm test`.
 
 ## Claude Code : hooks et relecteur
 
