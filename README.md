@@ -146,6 +146,30 @@ Un composant shadcn de plus : `pnpm dlx shadcn@latest add <composant>` dans `app
 
 Pour chaque tranche, après la validation de sa spec et de son plan, quatre agents se passent le travail, chacun dans son périmètre :
 
+```mermaid
+flowchart TD
+    P(["/prd : l'humain valide le PRD"]) --> S(["/spec puis /spec-plan : l'humain valide la spec et le plan"])
+    S --> UX
+
+    subgraph B["Construire : agents qui écrivent, chacun dans son périmètre"]
+        UX["ux-design<br/>design/<br/>note : textes exacts, états, accessibilité"]
+        BE["backend<br/>packages/shared, apps/api<br/>domain, application, infra, http<br/>pnpm tdd:red puis code, un commit par tâche"]
+        FE["frontend<br/>apps/web<br/>features, routes, fausse API MSW<br/>pnpm tdd:red puis code, un commit par tâche"]
+    end
+
+    subgraph C["Contrôler : lecture seule"]
+        REL["relecteur, via /converge<br/>base et spec seulement<br/>Converged ou écarts avec preuve"]
+    end
+
+    UX -- "note de design" --> FE
+    UX --> BE
+    BE -- "contrat de l'API" --> FE
+    FE --> REL
+    REL -- "écart : tâche ajoutée au plan" --> BE
+    REL -- "écart : tâche ajoutée au plan" --> FE
+    REL -- "Converged : spec Implémentée" --> G(["L'humain pousse sur GitHub"])
+```
+
 | Ordre | Agent       | Périmètre                       | Ce qu'il rend                                                                     |
 | ----- | ----------- | ------------------------------- | --------------------------------------------------------------------------------- |
 | 1     | `ux-design` | `design/`                       | la note de design de l'écran (`design/NNN-nom.md`), d'après Podium Dakar          |

@@ -21,14 +21,28 @@ Pour construire une tranche du PRD, quatre agents se passent le travail. Chacun 
 
 ## Le déroulé d'une tranche
 
-```
-/prd (amendement validé)
-   └─ /spec TRn ─────────────── l'humain valide la spec
-        └─ /spec-plan ──────── l'humain valide le plan
-             ├─ 1. ux-design → design/NNN-nom.md        (l'humain relit la note)
-             ├─ 2. backend   → tâches API, un commit chacune
-             ├─ 3. frontend  → tâches écran, un commit chacune
-             └─ 4. /converge → relecteur : Converged, ou nouvelles tâches puis retour en 2 ou 3
+```mermaid
+flowchart TD
+    P(["/prd : l'humain valide le PRD"]) --> S(["/spec puis /spec-plan : l'humain valide la spec et le plan"])
+    S --> UX
+
+    subgraph B["Construire : agents qui écrivent, chacun dans son périmètre"]
+        UX["ux-design<br/>design/<br/>note : textes exacts, états, accessibilité"]
+        BE["backend<br/>packages/shared, apps/api<br/>domain, application, infra, http<br/>pnpm tdd:red puis code, un commit par tâche"]
+        FE["frontend<br/>apps/web<br/>features, routes, fausse API MSW<br/>pnpm tdd:red puis code, un commit par tâche"]
+    end
+
+    subgraph C["Contrôler : lecture seule"]
+        REL["relecteur, via /converge<br/>base et spec seulement<br/>Converged ou écarts avec preuve"]
+    end
+
+    UX -- "note de design" --> FE
+    UX --> BE
+    BE -- "contrat de l'API" --> FE
+    FE --> REL
+    REL -- "écart : tâche ajoutée au plan" --> BE
+    REL -- "écart : tâche ajoutée au plan" --> FE
+    REL -- "Converged : spec Implémentée" --> G(["L'humain pousse sur GitHub"])
 ```
 
 L'ordre compte : une API d'abord, un écran ensuite (« Une API d'abord » dans `task/ATELIER-C.md`), et pas d'écran sans sa note de design.
