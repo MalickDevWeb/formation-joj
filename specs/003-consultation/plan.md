@@ -62,3 +62,11 @@ Six tâches, dans l'ordre des couches ; chacune tient dans un commit.
 - [x] T04 [003-AS1, AS2, AS3, AS4, AS6] Écrire d'abord `apps/api/test/sport-events-read.e2e.spec.ts` (« 003-AS6: answers 404 for an unknown event »), puis les deux routes `GET` du controller
 - [x] T05 [003-AS1, AS4, AS6] Écrire d'abord `apps/web/src/mocks/handlers.test.ts` (« 003-AS1: the mock lists the events of a day »), puis les épreuves de `fixture.ts` et les deux routes de `handlers.ts`
 - [x] T06 [003-AS1, AS2, AS3, AS4, AS5, AS6] Écrire d'abord `features/sport-events/components/sport-events-page.test.tsx` et `sport-event-detail-page.test.tsx` (« 003-AS4: shows the podium and the full ranking »), puis les appels, les requêtes, les deux pages, leurs routes, le lien de l'accueil et l'audit axe `routes/epreuves.a11y.test.tsx`
+
+## 7. Corrections
+
+### Passage 1
+
+- [ ] T07 [003-AS5] Compléter d'abord `features/sport-events/components/sport-event-detail-page.test.tsx` (« 003-AS5: shows the status, site and time, and says the ranking is not published yet ») avec le site « Diamniadio » : le relecteur note qu'aucun test ne vérifie le site d'une épreuve sans classement (sport-event-detail-page.test.tsx:35-44)
+- [ ] T08 [003-AS6] Écrire d'abord `apps/web/src/mocks/handlers.test.ts` (« 003-AS6: the mock answers 400 VALIDATION_FAILED for a malformed id, like the API »), puis valider `:id` avec `sportEventIdParamsSchema` dans `handlers.ts` : la fausse API répondait 404 là où l'API répond 400 (handlers.ts:72-78, controller:47)
+- [ ] T09 [003-AS6] Écrire d'abord `features/sport-events/components/sport-event-detail-page.test.tsx` (« 003-AS6: says the event cannot be found for a malformed id »), puis, dans `sport-event-detail-page.tsx`, vérifier l'identifiant avec `sportEventIdParamsSchema` avant d'appeler l'API : `/epreuves/abc` affichait « Une erreur est survenue. Réessayez. » (error-message.ts:10)
