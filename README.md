@@ -4,6 +4,10 @@
 **Lancer** : Node 24 (`nvm use`) et `corepack enable`, puis `pnpm install` et `pnpm dev` ; créer une épreuve, la faire avancer et publier son classement dans Swagger (http://localhost:3000/api/docs), puis la consulter à l'écran (http://localhost:5173/epreuves) ; `pnpm check` doit être vert.
 **Ce qui manque** : TR4 (tableau des médailles par pays) et TR5 (rectifier un classement avec historique) ne sont pas construites ; pas de comptes pour les responsables (n'importe qui peut publier), pas d'ex æquo.
 
+> **Réalisé pendant le Bootcamp AI Programming d'Artefact (Dakar, novembre 2026), avec Claude Code.** Équipe : Silamaka Diallo (analyste de données), Daouda KA (ingénieur en informatique, spécialité Business Intelligence), Papa Malick Teuw (ingénieur développeur Full Stack & Data, conception et développement).
+
+Version complète de l'application, en ligne : [Podium Dakar](https://github.com/MalickDevWeb/resultat-joj) (https://resultat-joj-jugu.vercel.app).
+
 Tranches livrées, chacune avec sa spec, son plan, un test par scénario et une relecture indépendante : TR1 [`001-epreuves`](specs/001-epreuves/spec.md), TR2 [`002-classements`](specs/002-classements/spec.md), TR3 [`003-consultation`](specs/003-consultation/spec.md).
 
 Un monorepo pnpm : une API NestJS, un front React et des schémas partagés.
