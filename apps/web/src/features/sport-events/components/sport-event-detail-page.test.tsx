@@ -32,13 +32,14 @@ describe('SportEventDetailPage', () => {
     expect(rows[5]).toHaveTextContent('5Kenji SatoJPN10.55 s');
   });
 
-  it('003-AS5: says the ranking is not published yet for an upcoming event', async () => {
+  it('003-AS5: shows the status, site and time, and says the ranking is not published yet', async () => {
     await open(longueur.id);
 
     expect(
       await screen.findByRole('heading', { level: 1, name: longueur.name }),
     ).toBeInTheDocument();
     expect(screen.getByText('À venir')).toBeInTheDocument();
+    expect(screen.getByText('Diamniadio')).toBeInTheDocument();
     expect(screen.getByText(/16:20/)).toBeInTheDocument();
     expect(screen.getByText('Le classement n’est pas encore publié.')).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
