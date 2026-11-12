@@ -1,6 +1,12 @@
-# JOJ Dakar 2026 : point de départ de l'atelier C
+# Résultats des JOJ Dakar 2026
 
-Un monorepo pnpm : une API NestJS, un front React et des schémas partagés. Le socle technique est prêt (configuration, base, erreurs, client HTTP, fausse API des tests) ; aucun module métier n'est écrit. Le module de référence, qui montre toute la chaîne du schéma partagé à l'écran, se lit sur la branche `main` (voir `CLAUDE.md`).
+**Le problème et pour qui** : pendant les JOJ Dakar 2026, le public et les journalistes ne savent pas si une épreuve est à venir, en cours ou terminée, ni qui l'a gagnée, et recoupent les classements à la main ; cette application est la source unique des résultats, tenue par le responsable résultats de chaque site (PRD : [`specs/prd-resultats.md`](specs/prd-resultats.md)).
+**Lancer** : Node 24 (`nvm use`) et `corepack enable`, puis `pnpm install` et `pnpm dev` ; créer une épreuve, la faire avancer et publier son classement dans Swagger (http://localhost:3000/api/docs), puis la consulter à l'écran (http://localhost:5173/epreuves) ; `pnpm check` doit être vert.
+**Ce qui manque** : TR4 (tableau des médailles par pays) et TR5 (rectifier un classement avec historique) ne sont pas construites ; pas de comptes pour les responsables (n'importe qui peut publier), pas d'ex æquo.
+
+Tranches livrées, chacune avec sa spec, son plan, un test par scénario et une relecture indépendante : TR1 [`001-epreuves`](specs/001-epreuves/spec.md), TR2 [`002-classements`](specs/002-classements/spec.md), TR3 [`003-consultation`](specs/003-consultation/spec.md).
+
+Un monorepo pnpm : une API NestJS, un front React et des schémas partagés.
 
 L'énoncé de l'atelier C est dans [`task/ATELIER-C.md`](task/ATELIER-C.md).
 
